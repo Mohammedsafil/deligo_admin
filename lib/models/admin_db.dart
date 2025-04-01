@@ -42,8 +42,13 @@ class FirestoreService {
     await _db.collection('delivery_partners').doc(partnerId).delete();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getProfileStream(String partnerId) {
-    return _db.collection('delivery_partners').where(partnerId, isEqualTo: partnerId).snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> getProfileStream(
+    String partnerId,
+  ) {
+    return _db
+        .collection('delivery_partners')
+        .where(partnerId, isEqualTo: partnerId)
+        .snapshots();
   }
 
   Future<void> getTransactionIds() async {
@@ -71,8 +76,8 @@ class FirestoreService {
 
       QuerySnapshot partnerlog =
           await FirebaseFirestore.instance
-              .collection('partnerlogin')
-              .where('partnerId', isEqualTo: id)
+              .collection('admins')
+              .where('adminId', isEqualTo: id)
               .get();
 
       print("Documents found: ${partnerlog.docs.length}"); // Deb

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'DeliGo Admin',
       theme: ThemeData(primarySwatch: Colors.orange),
-      home: const HomeScreen(),
+      home: const OpeningScreen(),
     );
   }
 }

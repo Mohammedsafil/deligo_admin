@@ -5,7 +5,6 @@ import 'partner_management_screen.dart';
 import './payment_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  // final String adminId = "+91 9789378657";
   const SettingsScreen({super.key});
 
   @override
