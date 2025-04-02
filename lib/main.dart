@@ -1,9 +1,6 @@
-import 'package:admin/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'screens/opening_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/reports_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
