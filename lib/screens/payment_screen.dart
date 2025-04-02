@@ -21,6 +21,9 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   late String adminId = widget.adminId;
   late CollectionReference<Map<String, dynamic>> _transactionStream;
+
+  final int initialTransactionsCount = 5;
+  bool _showAllTransactions = false;
   // final FirestoreService _firestoreService = FirestoreService();
   // final String partnerTranId = "+91 9789378657";
 
@@ -56,39 +59,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
         backgroundColor: const Color(0xFFFF4B3A),
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [_buildEarningsSummary(), _buildTransactionsList()],
-            ),
-          ),
-          const SizedBox(height: 120),
-          // _buildWithDrawSection(),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildEarningsSummary(),
+            Expanded(child: _buildTransactionsList()),
+            // const SizedBox(height: 20),
+          ],
+        ),
       ),
 
-      // bottomNavigationBar: BottomNavBar(
-      //   currentIndex: 1,
-      //   onTap: (currentIndex) {
-      //     if (currentIndex == 0) {
-      //       Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (context) => OrdersScreen(partnerId: partnerId),
-      //         ),
-      //       );
-      //     } else if (currentIndex == 2) {
-      //       Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder:
-      //               (context) => ProfileScreen(partnerId: widget.partnerId),
-      //         ),
-      //       );
-      //     }
-      //   },
-      // ),
       bottomNavigationBar: const BottomNavBar(selectedIndex: 1),
     );
   }
@@ -108,13 +88,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
         double totalEarnings = 0;
         double todaysEarnings = 0;
         double thisWeekEarnings = 0;
+        int xCnt = 0;
+        int yCnt = 0;
 
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
           DateTime now = DateTime.now();
           DateTime startOfDay = DateTime(now.year, now.month, now.day);
-          DateTime startOfWeek = now.subtract(
-            Duration(days: now.weekday - 1),
+          int daysSinceMonday = now.weekday - 1;
+          DateTime startOfWeek = DateTime(
+            now.year,
+            now.month,
+            now.day - daysSinceMonday,
           ); // Monday of the current week
+
+          print('Now: $now');
+          print('Start of day: $startOfDay');
+          print('Start of week: $startOfWeek');
 
           totalEarnings = snapshot.data!.docs.fold(0.0, (total, doc) {
             final data = doc.data() as Map<String, dynamic>;
@@ -127,12 +116,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
               if (transactionDate.isAfter(startOfDay) &&
                   transactionDate.isBefore(now)) {
                 todaysEarnings += amount;
+                xCnt++;
               }
 
               // Check if the transaction is this week
               if (transactionDate.isAfter(startOfWeek) &&
                   transactionDate.isBefore(now)) {
                 thisWeekEarnings += amount;
+                yCnt++;
               }
             }
             return total + amount;
@@ -170,12 +161,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   _buildEarningsCard(
                     'Today',
                     '₹ ${todaysEarnings.toStringAsFixed(2)}',
-                    'X deliveries',
+                    '$xCnt deliveries',
                   ),
                   _buildEarningsCard(
                     'This Week',
                     '₹ ${thisWeekEarnings.toStringAsFixed(2)}',
-                    'Y deliveries',
+                    '$yCnt deliveries',
                   ),
                 ],
               ),
@@ -219,6 +210,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Widget _buildTransactionsList() {
+    // Define these as class variables instead of local variables
+    // to maintain state between rebuilds
+
     return StreamBuilder<QuerySnapshot>(
       stream: _transactionStream.snapshots(),
       builder: (context, snapshot) {
@@ -243,40 +237,68 @@ class _PaymentScreenState extends State<PaymentScreen> {
           });
         }
 
-        return SizedBox(
-          height: 500, // Set a fixed height to make it scrollable
-          child: SingleChildScrollView(
-            child: Column(
-              children:
-                  allTransactions.map((doc) {
-                    final transaction = doc.data() as Map<String, dynamic>;
+        // Determine which transactions to display based on _showAllTransactions flag
+        List<QueryDocumentSnapshot> transactionsToDisplay =
+            _showAllTransactions
+                ? allTransactions.toList()
+                : allTransactions.take(initialTransactionsCount).toList();
 
-                    DateTime dateTime;
-                    if (transaction['date'] is Timestamp) {
-                      dateTime = (transaction['date'] as Timestamp).toDate();
-                    } else {
-                      dateTime =
-                          DateTime.tryParse(transaction['date'].toString()) ??
-                          DateTime.now();
-                    }
+        return Column(
+          children: [
+            // Transaction list
+            Expanded(
+              child: ListView.builder(
+                itemCount: transactionsToDisplay.length,
+                itemBuilder: (context, index) {
+                  final doc = transactionsToDisplay[index];
+                  final transaction = doc.data() as Map<String, dynamic>;
 
-                    String formattedDate = DateFormat(
-                      'dd MMM yyyy',
-                    ).format(dateTime);
-                    String formattedTime = DateFormat(
-                      'hh:mm a',
-                    ).format(dateTime);
+                  DateTime dateTime;
+                  if (transaction['date'] is Timestamp) {
+                    dateTime = (transaction['date'] as Timestamp).toDate();
+                  } else {
+                    dateTime =
+                        DateTime.tryParse(transaction['date'].toString()) ??
+                        DateTime.now();
+                  }
 
-                    return _buildTransactionCard(
-                      date: formattedDate,
-                      time: formattedTime,
-                      orderNumber: transaction['orderNumber'].toString(),
-                      amount: '₹ ${transaction['amount'].toString() ?? '0'}',
-                      type: transaction['type'].toString() ?? 'Payment',
-                    );
-                  }).toList(),
+                  String formattedDate = DateFormat(
+                    'dd MMM yyyy',
+                  ).format(dateTime);
+                  String formattedTime = DateFormat('hh:mm a').format(dateTime);
+
+                  return _buildTransactionCard(
+                    date: formattedDate,
+                    time: formattedTime,
+                    orderNumber: transaction['orderNumber'].toString(),
+                    amount: '₹ ${transaction['amount'].toString() ?? '0'}',
+                    type: transaction['type'].toString() ?? 'Payment',
+                  );
+                },
+              ),
             ),
-          ),
+
+            // "See More" button
+            if (allTransactions.length > initialTransactionsCount)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _showAllTransactions = !_showAllTransactions;
+                    });
+                  },
+                  child: Text(
+                    _showAllTransactions ? 'Show Less' : 'See More',
+                    style: GoogleFonts.lato(
+                      color: const Color(0xFFFF4B3A),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         );
       },
     );

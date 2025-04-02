@@ -60,19 +60,16 @@ class FirestoreService {
 
   Future<void> saveLogin(String mobileNumber) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('partnerMobile', mobileNumber);
-    print(mobileNumber);
-    print(await prefs.setString('partnerMobile', mobileNumber));
+    await prefs.setString('adminMobile', mobileNumber);
   }
 
   Future<bool> authPartner(String id) async {
     try {
-      print("Checking login for partnerId: $id"); // Debugging log
 
       QuerySnapshot partnerlog =
           await FirebaseFirestore.instance
-              .collection('partnerlogin')
-              .where('partnerId', isEqualTo: id)
+              .collection('admins')
+              .where('adminId', isEqualTo: id)
               .get();
 
       print("Documents found: ${partnerlog.docs.length}"); // Deb
@@ -85,12 +82,11 @@ class FirestoreService {
 
   Future<String> checkLogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('partnerMobile') ?? '';
+    return prefs.getString('adminMobile') ?? '';
   }
 
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(await prefs.get('partnerMobile'));
-    await prefs.remove('partnerMobile');
+    await prefs.remove('adminMobile');
   }
 }
