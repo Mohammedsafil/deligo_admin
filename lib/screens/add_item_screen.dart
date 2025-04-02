@@ -46,7 +46,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           'type': selectedType,
           'price': double.parse(priceController.text),
           'description': descriptionController.text,
-          'imageUrl': '', // Image is picked but NOT uploaded
+          'image': '', // Image is picked but NOT uploaded
           'timestamp': FieldValue.serverTimestamp(),
         });
 
@@ -67,7 +67,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add New Item"),
+        title: const Text("Add New Item", style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFFFF4B3A), // DeliGo Theme Color
         elevation: 4,
         shadowColor: Colors.black.withOpacity(0.3),
@@ -138,12 +138,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 const SizedBox(height: 15),
 
                 // 🔹 Description Input
-                TextFormField(
-                  controller: descriptionController,
-                  maxLines: 3,
-                  decoration: _inputDecoration("Description"),
-                  validator: (value) => value!.isEmpty ? "Enter description" : null,
-                ),
+                _buildTextField(descriptionController, "Description", "Enter description", isMultiLine: true),
                 const SizedBox(height: 20),
 
                 // 🔹 Submit Button with Gradient and Shadow
@@ -171,23 +166,46 @@ class _AddItemScreenState extends State<AddItemScreen> {
   }
 
   // 🔹 Custom Text Field Widget with Shadow
-  Widget _buildTextField(TextEditingController controller, String label, String validationMsg, {bool isNumeric = false}) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: isNumeric ? TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
-      decoration: _inputDecoration(label),
-      validator: (value) => value!.isEmpty ? validationMsg : null,
+  Widget _buildTextField(TextEditingController controller, String label, String validationMsg, {bool isNumeric = false, bool isMultiLine = false}) {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: isNumeric ? TextInputType.numberWithOptions(decimal: true) : TextInputType.text,
+        maxLines: isMultiLine ? 3 : 1,
+        decoration: _inputDecoration(label),
+        validator: (value) => value!.isEmpty ? validationMsg : null,
+      ),
     );
   }
 
   // 🔹 Custom Dropdown Widget
   Widget _buildDropdown({required String label, required String? value, required List<String> items, required Function(String?) onChanged}) {
-    return DropdownButtonFormField<String>(
-      value: value,
-      items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
-      onChanged: onChanged,
-      decoration: _inputDecoration(label),
-      validator: (value) => value == null ? "Please select $label" : null,
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: DropdownButtonFormField<String>(
+        value: value,
+        items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
+        onChanged: onChanged,
+        decoration: _inputDecoration(label),
+        validator: (value) => value == null ? "Please select $label" : null,
+      ),
     );
   }
 
