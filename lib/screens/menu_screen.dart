@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/bottom_nav_bar.dart';
-import '../widgets/app_header.dart'; // ✅ Import the reusable header
+import '../widgets/app_header.dart';
+import 'add_item_screen.dart'; // ✅ Import the AddItemScreen
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -47,8 +48,16 @@ class MenuScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildGradientButton(Icons.tune, "Manage Items"),
-                _buildGradientButton(Icons.add_circle_outline, "Add New Item"),
+                _buildGradientButton(Icons.tune, "Manage Items", () {
+                  // TODO: Implement Manage Items navigation
+                }),
+                _buildGradientButton(Icons.add_circle_outline, "Add New Item", () {
+                  // ✅ Navigate to AddItemScreen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AddItemScreen()),
+                  );
+                }),
               ],
             ),
 
@@ -106,8 +115,8 @@ class MenuScreen extends StatelessWidget {
     );
   }
 
-  // 🔹 Custom Gradient Button
-  Widget _buildGradientButton(IconData icon, String label) {
+  // 🔹 Custom Gradient Button with onTap Callback
+  Widget _buildGradientButton(IconData icon, String label, VoidCallback onTap) {
     return Expanded(
       child: Container(
         height: 100,
@@ -121,7 +130,7 @@ class MenuScreen extends StatelessWidget {
           ),
         ),
         child: TextButton(
-          onPressed: () {},
+          onPressed: onTap,
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
