@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/app_header.dart';
-import 'add_item_screen.dart'; // ✅ Import the AddItemScreen
+import 'add_item_screen.dart';
+import 'manage_items_screen.dart';
+import 'manage_offers_screen.dart'; // ✅ Import ManageOffersScreen
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -11,15 +12,12 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // ✅ Using Reusable App Header
       appBar: AppHeader(
         title: "DeliGo",
         onNotificationPressed: () {
           // TODO: Handle notification click
         },
       ),
-
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Column(
@@ -41,26 +39,32 @@ class MenuScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
 
-            // 🔹 Manage Items & Add New Item Buttons with Gradient
+            // 🔹 Buttons for Managing Items, Adding New Items & Managing Offers
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildGradientButton(Icons.tune, "Manage Items", () {
-                  // TODO: Implement Manage Items navigation
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ManageItemsScreen()),
+                  );
                 }),
                 _buildGradientButton(Icons.add_circle_outline, "Add New Item", () {
-                  // ✅ Navigate to AddItemScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const AddItemScreen()),
                   );
                 }),
+                _buildGradientButton(Icons.local_offer, "Manage Offers", () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ManageOffersScreen()), // ✅ Navigate to Manage Offers
+                  );
+                }),
               ],
             ),
-
             const SizedBox(height: 20),
 
             // 🔹 Low Stock Alert Section
@@ -89,7 +93,6 @@ class MenuScreen extends StatelessWidget {
                   const SizedBox(height: 5),
                   const Text("• Chicken (5 pieces left)", style: TextStyle(fontSize: 14)),
                   const Text("• Cheese (500g left)", style: TextStyle(fontSize: 14)),
-                  const Text("• Cheese (500g left)", style: TextStyle(fontSize: 14)),
                   const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerRight,
@@ -109,13 +112,11 @@ class MenuScreen extends StatelessWidget {
           ],
         ),
       ),
-
-      // ✅ Bottom Navigation Bar
       bottomNavigationBar: const BottomNavBar(selectedIndex: 2),
     );
   }
 
-  // 🔹 Custom Gradient Button with onTap Callback
+  // 🔹 Custom Gradient Button
   Widget _buildGradientButton(IconData icon, String label, VoidCallback onTap) {
     return Expanded(
       child: Container(
