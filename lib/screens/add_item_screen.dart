@@ -13,7 +13,7 @@ class AddItemScreen extends StatefulWidget {
 class _AddItemScreenState extends State<AddItemScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController foodNameController = TextEditingController();
-  final TextEditingController surnameController = TextEditingController();
+  // final TextEditingController surnameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
@@ -21,7 +21,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   String? selectedType;
   Uint8List? _imageBytes;
 
-  final List<String> categories = ['Veg', 'Non-Veg', 'Beverages', 'Dessert'];
+  final List<String> categories = ['Veg', 'Non-Veg'];
   final List<String> types = ['Breakfast', 'Lunch', 'Snacks', 'Dinner'];
 
   // 🔹 Pick an Image
@@ -41,11 +41,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
       try {
         await FirebaseFirestore.instance.collection("food_items").add({
           'name': foodNameController.text,
-          'surname': surnameController.text,
+          // 'surname': surnameController.text,
           'category': selectedCategory,
           'type': selectedType,
           'price': double.parse(priceController.text),
           'description': descriptionController.text,
+          'stock': 0,
           'image': '', // Image is picked but NOT uploaded
           'timestamp': FieldValue.serverTimestamp(),
         });
@@ -112,8 +113,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 // 🔹 Input Fields with Shadows
                 _buildTextField(foodNameController, "Food Name", "Enter food name"),
                 const SizedBox(height: 15),
-                _buildTextField(surnameController, "Surname", "Enter surname"),
-                const SizedBox(height: 15),
+                // _buildTextField(surnameController, "Surname", "Enter surname"),
+                // const SizedBox(height: 15),
 
                 // 🔹 Category Dropdown
                 _buildDropdown(
