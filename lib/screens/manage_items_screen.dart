@@ -30,7 +30,7 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
   // 🔹 Function to Edit Item Details
   void _editItem(DocumentSnapshot item) {
     TextEditingController nameController = TextEditingController(text: item['name']);
-    TextEditingController surnameController = TextEditingController(text: item['surname'] ?? "");
+    // TextEditingController surnameController = TextEditingController(text: item['surname'] ?? "");
     TextEditingController priceController = TextEditingController(text: item['price'].toString());
     TextEditingController descriptionController = TextEditingController(text: item['description']);
     TextEditingController stockEditController = TextEditingController(text: item['stock']?.toString() ?? "0");
@@ -45,8 +45,8 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
             children: [
               _buildTextField(nameController, "Food Name"),
               const SizedBox(height: 10),
-              _buildTextField(surnameController, "Surname"),
-              const SizedBox(height: 10),
+              // _buildTextField(surnameController, "Surname"),
+              // const SizedBox(height: 10),
               _buildTextField(priceController, "Price", isNumeric: true),
               const SizedBox(height: 10),
               _buildTextField(descriptionController, "Description"),
@@ -63,7 +63,7 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
               onPressed: () async {
                 await FirebaseFirestore.instance.collection('food_items').doc(item.id).update({
                   'name': nameController.text,
-                  'surname': surnameController.text,
+                  // 'surname': surnameController.text,
                   'price': double.parse(priceController.text),
                   'description': descriptionController.text,
                   'stock': int.tryParse(stockEditController.text) ?? 0,
@@ -155,7 +155,7 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Surname: ${item['surname'] ?? 'N/A'}", style: TextStyle(color: Colors.grey[700])),
+                            // Text("Surname: ${item['surname'] ?? 'N/A'}", style: TextStyle(color: Colors.grey[700])),
                             Text("Category: ${item['category']}", style: TextStyle(color: Colors.grey[700])),
                             Text("Type: ${item['type']}", style: TextStyle(color: Colors.grey[700])),
                             Text("Price: ₹${item['price']}", style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
@@ -210,4 +210,5 @@ class _ManageItemsScreenState extends State<ManageItemsScreen> {
       ),
     );
   }
+
 }
