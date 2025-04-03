@@ -41,12 +41,7 @@ class SignInScreenState extends State<SignInScreen> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
-              Text(
-                'We will send you a Confirmation Code',
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-              ),
+
               const SizedBox(height: 40),
 
               // Mobile Number Input using IntlPhoneField
@@ -79,9 +74,7 @@ class SignInScreenState extends State<SignInScreen> {
                     await _firestoreService.saveLogin(id);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeScreen(),
-                      ),
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(

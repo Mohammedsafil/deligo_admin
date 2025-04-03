@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../models/admin_db.dart';
 import './withdrawal_screen.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -24,7 +23,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   late CollectionReference<Map<String, dynamic>> _transactionStream;
 
   final int initialTransactionsCount = 5;
-  final int incrementAmount = 5;
+  final int incrementAmount = 10;
   int _currentTransactionsCount = 5;
   // final FirestoreService _firestoreService = FirestoreService();
   // final String partnerTranId = "+91 9789378657";
@@ -76,7 +75,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           _showReportOptions(context);
         },
         backgroundColor: const Color(0xFFFF4B3A),
-        child: const Icon(Icons.receipt, color: Colors.white),
+        child: const Icon(Icons.receipt_long, color: Colors.white),
       ),
 
       bottomNavigationBar: const BottomNavBar(selectedIndex: 1),
@@ -317,7 +316,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               return _buildTransactionCard(
                 date: formattedDate,
                 time: formattedTime,
-                orderNumber: transaction['orderNumber'].toString(),
+                orderNumber: transaction['orderId'].toString(),
                 amount: '₹ ${transaction['amount'].toString() ?? '0'}',
                 type: transaction['type'].toString() ?? 'Payment',
               );
@@ -799,7 +798,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           return pw.TableRow(
                             children: [
                               _buildTableCell(formattedDate),
-                              _buildTableCell(data['orderNumber'].toString()),
+                              _buildTableCell(data['orderId'].toString()),
                               _buildTableCell(data['type'].toString()),
                               _buildTableCell(
                                 'Rs ${data['amount'].toString()}',
@@ -1025,7 +1024,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           return pw.TableRow(
                             children: [
                               _buildTableCell(formattedDate),
-                              _buildTableCell(data['orderNumber'].toString()),
+                              _buildTableCell(data['orderId'].toString()),
                               _buildTableCell(data['type'].toString()),
                               _buildTableCell(
                                 'Rs ${data['amount'].toString()}',

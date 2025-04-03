@@ -1,3 +1,4 @@
+import 'package:admin/screens/opening_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'screens/home_screen.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'DeliGo Admin',
       theme: ThemeData(primarySwatch: Colors.orange),
-      home: const HomeScreen(),
+      home: const OpeningScreen(),
     );
   }
 }

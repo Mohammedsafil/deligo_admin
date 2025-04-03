@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/admin_db.dart';
 
 class PartnerManagementScreen extends StatefulWidget {
   const PartnerManagementScreen({Key? key}) : super(key: key);
@@ -24,9 +25,127 @@ class _PartnerManagementScreenState extends State<PartnerManagementScreen> {
 
   // Firestore reference
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirestoreService _firestoreService = FirestoreService();
+
+  // Widget to display partner's active status
+  Widget _buildActiveStatusIndicator(String mobileNo) {
+    return StreamBuilder<QuerySnapshot>(
+      stream:
+          _firestore
+              .collection('partnerlogin')
+              .where('partnerId', isEqualTo: mobileNo)
+              .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(width: 12, height: 12);
+        }
+
+        if (snapshot.hasError ||
+            !snapshot.hasData ||
+            snapshot.data!.docs.isEmpty) {
+          // If error or no data, show inactive status
+          return Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                "Inactive",
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.red[700],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          );
+        }
+
+        // Get the partner login document
+        final doc = snapshot.data!.docs.first;
+        final data = doc.data() as Map<String, dynamic>;
+
+        // Check if active field exists and is true
+        final bool isActive = data['active'] == true;
+
+        return Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: isActive ? Colors.green : Colors.red,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              isActive ? "Active" : "Inactive",
+              style: TextStyle(
+                fontSize: 12,
+                color: isActive ? Colors.green[700] : Colors.red[700],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to toggle partner active status
+  Future<void> _toggleActiveStatus(String mobileNo) async {
+    try {
+      // Find the partner login document
+      final querySnapshot =
+          await _firestore
+              .collection('partnerlogin')
+              .where('partnerId', isEqualTo: mobileNo)
+              .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        final data = doc.data();
+        final currentStatus = data['active'] == true;
+
+        // Toggle the status
+        await doc.reference.update({'active': !currentStatus});
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Partner is now ${!currentStatus ? "active" : "inactive"}',
+            ),
+            backgroundColor: !currentStatus ? Colors.green : Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error toggling status: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    Future<int> _getTotalPartners() async {
+      return await _firestoreService.getTotalPartnerCount();
+    }
+
+    Future<int> _getActivePartners() async {
+      return await _firestoreService.getActivePartnerCount();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -76,11 +195,15 @@ class _PartnerManagementScreenState extends State<PartnerManagementScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                _buildStatCard('Total Partners', 'Loading...', Icons.people),
+                _buildStatCard(
+                  'Total Partners',
+                  _getTotalPartners(),
+                  Icons.people,
+                ),
                 const SizedBox(width: 16),
                 _buildStatCard(
                   'Active Now',
-                  'Loading...',
+                  _getActivePartners(),
                   Icons.delivery_dining,
                 ),
               ],
@@ -142,6 +265,7 @@ class _PartnerManagementScreenState extends State<PartnerManagementScreen> {
                     final partner =
                         partners[index].data() as Map<String, dynamic>;
                     final partnerId = partners[index].id;
+                    final mobileNo = partner['mobile_no'];
 
                     // Get delivery statistics
                     final stats =
@@ -192,12 +316,27 @@ class _PartnerManagementScreenState extends State<PartnerManagementScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        partner['name'],
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            partner['name'],
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          // Active status indicator
+                                          GestureDetector(
+                                            onTap:
+                                                () => _toggleActiveStatus(
+                                                  mobileNo,
+                                                ),
+                                            child: _buildActiveStatusIndicator(
+                                              mobileNo,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(height: 4),
                                       Row(
@@ -282,7 +421,7 @@ class _PartnerManagementScreenState extends State<PartnerManagementScreen> {
                                   _buildDivider(),
                                   _buildMetric(
                                     'Rating',
-                                    '${stats['rating']}★',
+                                    '${stats['rating']}',
                                     Icons.star,
                                   ),
                                   _buildDivider(),
@@ -314,7 +453,7 @@ class _PartnerManagementScreenState extends State<PartnerManagementScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon) {
+  Widget _buildStatCard(String title, Future<int> value, IconData icon) {
     return Expanded(
       child: Card(
         elevation: 2,
@@ -330,12 +469,26 @@ class _PartnerManagementScreenState extends State<PartnerManagementScreen> {
                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
               const SizedBox(height: 4),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              FutureBuilder<int>(
+                future: value, // Wait for the future to complete
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator(); // Show loading indicator
+                  } else if (snapshot.hasError) {
+                    return const Text(
+                      'Error',
+                      style: TextStyle(color: Colors.red),
+                    );
+                  } else {
+                    return Text(
+                      snapshot.data?.toString() ?? 'N/A',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           ),
@@ -635,9 +788,10 @@ class _PartnerManagementScreenState extends State<PartnerManagementScreen> {
         };
 
         if (_isAddingPartner) {
-          // Create partner login record
+          // Create partner login record with active field set to false by default
           await _firestore.collection('partnerlogin').add({
             'partnerId': partnerData['mobile_no'],
+            'active': false, // Set to inactive by default
             'created_at': FieldValue.serverTimestamp(),
           });
 

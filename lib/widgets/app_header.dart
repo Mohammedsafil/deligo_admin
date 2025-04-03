@@ -4,11 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onNotificationPressed;
+  final IconData notificationIcon;
 
   const AppHeader({
     Key? key,
     required this.title,
     required this.onNotificationPressed,
+    required this.notificationIcon,
   }) : super(key: key);
 
   @override
@@ -19,14 +21,11 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       title: Text(
         title,
-        style: GoogleFonts.pacifico(
-          fontSize: 30,
-          color: Colors.red,
-        ),
+        style: GoogleFonts.pacifico(fontSize: 30, color: Colors.red),
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications, size: 28, color: Colors.black87),
+          icon: Icon(notificationIcon),
           onPressed: onNotificationPressed,
         ),
       ],

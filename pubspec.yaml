@@ -45,6 +45,10 @@ dependencies:
   pdf: ^3.8.0
   printing: ^5.9.0
   path_provider: ^2.1.5
+  image_picker: ^1.1.2
+  flutter_local_notifications: ^19.0.0
+  audioplayers: ^6.4.0
+  # firebase_messaging: ^14.7.10
 
 dev_dependencies:
   flutter_test:

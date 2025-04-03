@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../widgets/bottom_nav_bar.dart';
-import '../widgets/app_header.dart'; // ✅ Import the reusable header
+import '../widgets/app_header.dart';
+import 'add_item_screen.dart';
+import 'manage_items_screen.dart'; // ✅ Import the AddItemScreen
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({Key? key}) : super(key: key);
@@ -16,6 +19,7 @@ class MenuScreen extends StatelessWidget {
         onNotificationPressed: () {
           // TODO: Handle notification click
         },
+        notificationIcon: Icons.notifications,
       ),
 
       body: Padding(
@@ -46,8 +50,27 @@ class MenuScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildGradientButton(Icons.tune, "Manage Items"),
-                _buildGradientButton(Icons.add_circle_outline, "Add New Item"),
+                _buildGradientButton(Icons.tune, "Manage Items", () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ManageItemsScreen(),
+                    ),
+                  );
+                }),
+                _buildGradientButton(
+                  Icons.add_circle_outline,
+                  "Add New Item",
+                  () {
+                    // ✅ Navigate to AddItemScreen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddItemScreen(),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
 
@@ -74,23 +97,44 @@ class MenuScreen extends StatelessWidget {
                 children: [
                   const Text(
                     "Low Stock Alert !",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
                   ),
                   const SizedBox(height: 5),
-                  const Text("• Chicken (5 pieces left)", style: TextStyle(fontSize: 14)),
-                  const Text("• Cheese (500g left)", style: TextStyle(fontSize: 14)),
-                  const Text("• Cheese (500g left)", style: TextStyle(fontSize: 14)),
+                  const Text(
+                    "• Chicken (5 pieces left)",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const Text(
+                    "• Cheese (500g left)",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const Text(
+                    "• Cheese (500g left)",
+                    style: TextStyle(fontSize: 14),
+                  ),
                   const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
                         backgroundColor: Colors.green,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                      child: const Text("Restocked", style: TextStyle(color: Colors.white)),
+                      child: const Text(
+                        "Restocked",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -105,8 +149,8 @@ class MenuScreen extends StatelessWidget {
     );
   }
 
-  // 🔹 Custom Gradient Button
-  Widget _buildGradientButton(IconData icon, String label) {
+  // 🔹 Custom Gradient Button with onTap Callback
+  Widget _buildGradientButton(IconData icon, String label, VoidCallback onTap) {
     return Expanded(
       child: Container(
         height: 100,
@@ -120,17 +164,22 @@ class MenuScreen extends StatelessWidget {
           ),
         ),
         child: TextButton(
-          onPressed: () {},
+          onPressed: onTap,
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: 30, color: Colors.white),
               const SizedBox(height: 5),
-              Text(label, style: const TextStyle(fontSize: 16, color: Colors.white)),
+              Text(
+                label,
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+              ),
             ],
           ),
         ),

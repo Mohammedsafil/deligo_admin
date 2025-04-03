@@ -70,7 +70,6 @@ class FirestoreService {
 
   Future<bool> authPartner(String id) async {
     try {
-
       QuerySnapshot partnerlog =
           await FirebaseFirestore.instance
               .collection('admins')
@@ -93,5 +92,49 @@ class FirestoreService {
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('adminMobile');
+  }
+
+  Future<int> getActivePartnerCount() async {
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance
+            .collection('partnerlogin')
+            .where('active', isEqualTo: true)
+            .get();
+    print("Documents found: ${snapshot.docs.length}");
+    return snapshot.docs.length;
+  }
+
+  Future<int> getTotalPartnerCount() async {
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('partnerlogin').get();
+    print("Documents found: ${snapshot.docs.length}");
+    return snapshot.docs.length;
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> getAdminProfileStream(
+    String adminId,
+  ) {
+    return _db.collection('admins').where('adminId', isEqualTo: adminId).get();
+  }
+
+  Future<void> updateAdminProfile(
+    String adminId,
+    Map<String, dynamic> updates,
+  ) async {
+    // First, find the document with this adminId field
+    final QuerySnapshot snapshot =
+        await _db
+            .collection('admins')
+            .where('adminId', isEqualTo: adminId)
+            .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      // Get the actual document ID
+      final String docId = snapshot.docs.first.id;
+      // Update using the document ID
+      await _db.collection('admins').doc(docId).update(updates);
+    } else {
+      throw Exception('Admin document not found');
+    }
   }
 }

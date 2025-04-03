@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/order_model.dart';
 
 class OrderCard extends StatelessWidget {
@@ -9,7 +10,8 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+      color: Colors.white,
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -22,8 +24,8 @@ class OrderCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    order.name,
-                    style: const TextStyle(
+                    order.customerName,
+                    style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.black87,
@@ -34,14 +36,17 @@ class OrderCard extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.amber.shade100,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
                         order.status,
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           color: Colors.amber.shade800,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -49,7 +54,10 @@ class OrderCard extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Colors.grey,
+                      ),
                       onPressed: () {
                         // Handle dropdown options
                       },
@@ -63,8 +71,8 @@ class OrderCard extends StatelessWidget {
 
             // Order ID and Item Count
             Text(
-              "Order Id: ${order.orderId}  •  ${order.items} items",
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
+              "Order Id: ${order.id}  •  ${order.orderedItems.length} items",
+              style: GoogleFonts.inter(color: Colors.grey, fontSize: 14),
             ),
 
             const SizedBox(height: 8),
@@ -74,8 +82,8 @@ class OrderCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Rs. ${order.price}",
-                  style: const TextStyle(
+                  "Rs. ${order.totalCost}",
+                  style: GoogleFonts.inter(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
@@ -83,15 +91,19 @@ class OrderCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.receipt_long, size: 18, color: Colors.grey),
+                    const Icon(
+                      Icons.receipt_long,
+                      size: 18,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(width: 5),
                     TextButton(
                       onPressed: () {
                         // Handle invoice download
                       },
-                      child: const Text(
+                      child: Text(
                         "Invoice",
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Colors.grey,

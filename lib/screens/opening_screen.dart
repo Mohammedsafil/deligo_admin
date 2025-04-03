@@ -1,10 +1,18 @@
+import '../models/admin_db.dart';
+import '../screens/home_screen.dart';
+import '../screens/signin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../screens/signin_screen.dart'; // ✅ Updated Import
 
-class OpeningScreen extends StatelessWidget {
+class OpeningScreen extends StatefulWidget {
   const OpeningScreen({super.key});
 
+  @override
+  State<OpeningScreen> createState() => _OpeningScreenState();
+}
+
+class _OpeningScreenState extends State<OpeningScreen> {
+  final FirestoreService _firestoreService = FirestoreService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,10 +31,7 @@ class OpeningScreen extends StatelessWidget {
             const Spacer(),
             Text(
               'DeliGo',
-              style: GoogleFonts.pacifico(
-                fontSize: 50,
-                color: Colors.white,
-              ),
+              style: GoogleFonts.pacifico(fontSize: 50, color: Colors.white),
             ),
             const Spacer(),
             Padding(
@@ -37,14 +42,26 @@ class OpeningScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 15,
+                  ),
                 ),
-                onPressed: () {
-                  // ✅ Now navigates to SignInScreen instead of '/home'
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignInScreen()),
-                  );
+                onPressed: () async {
+                  String check = await _firestoreService.checkLogin();
+                  if (check.isNotEmpty) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                    );
+                  } else {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignInScreen(),
+                      ),
+                    );
+                  }
                 },
                 child: Text(
                   'Get Started',

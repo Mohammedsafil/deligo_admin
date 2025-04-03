@@ -1,8 +1,8 @@
-import 'package:admin/screens/payment_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
-// import '../screens/reports_screen.dart';
 import '../screens/menu_screen.dart';
+import '../screens/settings_screen.dart';
+import '../screens/payment_screen.dart';
 import '../screens/settings_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -56,24 +56,15 @@ class BottomNavBar extends StatelessWidget {
           label: "Home",
         ),
         BottomNavigationBarItem(
-          icon: SizedBox(
-            height: 30,
-            child: Icon(Icons.receipt, size: 28),
-          ),
+          icon: SizedBox(height: 30, child: Icon(Icons.receipt, size: 28)),
           label: "Reports",
         ),
         BottomNavigationBarItem(
-          icon: SizedBox(
-            height: 30,
-            child: Icon(Icons.menu, size: 28),
-          ),
+          icon: SizedBox(height: 30, child: Icon(Icons.menu, size: 28)),
           label: "Menu",
         ),
         BottomNavigationBarItem(
-          icon: SizedBox(
-            height: 30,
-            child: Icon(Icons.settings, size: 28),
-          ),
+          icon: SizedBox(height: 30, child: Icon(Icons.settings, size: 28)),
           label: "Settings",
         ),
       ],
