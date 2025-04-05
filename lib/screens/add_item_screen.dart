@@ -46,6 +46,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
           'type': selectedType,
           'price': double.parse(priceController.text),
           'description': descriptionController.text,
+          'rating':5,
           'stock': 0,
           'image': '', // Image is picked but NOT uploaded
           'timestamp': FieldValue.serverTimestamp(),
